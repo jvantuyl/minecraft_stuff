@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+
+if [ "$1" == "clear" ] ; then
+	MBEOPTS="-flush"
+	MOVOPTS="-d"
+fi
+
+export PYTHONOPTIMIZE=on
+
+WORLD=~/minecraft/server/halcyon
+OPTS="--rendermodes=normal,lighting,night,spawn,cave,mineral --north-direction=upper-right"
+java -jar ~/devel/minecraft-biome-extractor/Dist/BiomeExtractor.jar -nogui $WORLD $MBEOPTS
+~/minecraft/bin/python -O ~/minecraft/Minecraft-Overviewer/overviewer.py $OPTS $MOVOPTS $WORLD ~/minecraft/map/

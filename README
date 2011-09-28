@@ -1,0 +1,32 @@
+This is just how I did it.  Here's the quick and dirty.
+
+# system needs
+apt-get install ant build-essential default-jdk gdb git-core libfreetype6-dev libjpeg-dev liblcms-dev libpng-dev nginx ntp ntpdate python-dev python-virtualenv rsync screen strace tk-dev vim
+
+# get server jar, put somewhere, set up cronjob as such
+@reboot path_to_server/minecraft_server
+# runs server in a screen
+
+# for mapping
+
+# python needs for map builder
+Make a virtualenv.
+pip install NBT
+pip install numpy
+pip install PIL
+
+# map builder sources
+git clone git://github.com/brownan/Minecraft-Overviewer.git
+# you'll need to do a 'python ./setup.py build' to get it working
+
+git clone git://github.com/overviewer/minecraft-biome-extractor.git
+
+For Biome coloring in maps, get Minecraft Client Jar, put in ~/.minecraft/bin
+and build biome extractor jar.
+
+# for biome extractor, you'll need to force the build number
+echo 1 > build.number
+ant
+# copy jar file to appropriate place
+
+# use nginx-site config to have Nginx server your map on port 80

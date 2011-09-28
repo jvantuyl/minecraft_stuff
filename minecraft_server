@@ -1,0 +1,5 @@
+#!/bin/bash 
+MCPATH=$(dirname $(readlink -f $0))
+cd ${MCPATH}
+echo Starting MineCraft server...
+exec screen -dmS minecraft -- java -Xmx600M -Xms256M -server -jar ${MCPATH}/minecraft_server.jar nogui

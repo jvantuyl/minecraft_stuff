@@ -1,0 +1,2 @@
+#!/bin/sh
+grep -i level-name server.properties | cut -f 2 -d =

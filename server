@@ -1,0 +1,11 @@
+#!/bin/bash -x
+if [ -z "$1" ] ; then
+	echo Must pass in world name...
+	exit 1
+fi
+
+export MCPATH="$(dirname "$(dirname "$(readlink -f "$BASH_SOURCE")")")"
+export WORLDPATH="$MCPATH"/var/lib/"$1"
+
+cd "$WORLDPATH"
+exec java -Xmx1750M -server -cp minecraft_server.jar net.minecraft.server.MinecraftServer -- nogui

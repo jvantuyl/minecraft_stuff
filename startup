@@ -1,0 +1,18 @@
+#!/bin/bash -x
+if [ -z "$1" ] ; then
+	echo Please specify server environment name...
+	exit 1
+fi
+
+export MCPATH="$(dirname "$(dirname "$(readlink -f "$BASH_SOURCE")")")"
+export WORLD="$1"
+export TMUX_SERVER="minecraft_${WORLD}"
+
+echo Starting MineCraft server...
+tmux start-server
+tmux kill-session -t "$TMUX_SERVER"
+tmux new-session -d -s "$TMUX_SERVER" -n "Server(${WORLD})" "${MCPATH}"/bin/server\ "$WORLD"
+tmux set-option -t "$TMUX_SERVER" set-remain-on-exit 1
+tmux set-window-option -t "$TMUX_SERVER":0 remain-on-exit 1
+tmux new-window -t "$TMUX_SERVER":1 -n "Backup" -d "${MCPATH}"/bin/backerupper\ "$WORLD"
+tmux new-window -t "$TMUX_SERVER":2 -n "Map" -d "${MCPATH}"/bin/mapper\ "$WORLD"

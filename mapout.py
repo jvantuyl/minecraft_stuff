@@ -1,4 +1,4 @@
-#!/home/kagato/minepy/bin/python
+#!/home/minecraft/minecraft/bin/python
 
 # mcexplore.py, by similardilemma
 # Released under the Creative Commons Attribution-ShareAlike license:

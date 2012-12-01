@@ -1,0 +1,19 @@
+#!/bin/bash -x
+if [ -z "$1" ] ; then
+	echo Must pass in world name...
+	exit 1
+fi
+
+export MCPATH="$(dirname "$(dirname "$(readlink -f "$BASH_SOURCE")")")"
+export WORLD="$1"
+export WORLDPATH="$MCPATH"/var/lib/"$WORLD"
+export BACKUPPATH="$MCPATH"/var/backup/"$WORLD"
+export MAPPATH="$MCPATH"/var/www/"$WORLD"/map/
+export TMUX_SERVER="minecraft_${WORLD}"
+
+BACKUP="${MCPATH}"/var/backup/"${WORLD}"/last/
+
+while /bin/true ; do
+	nice "${MCPATH}"/bin/update_map
+	read -t 60 # like sleep, but can press enter to skip ahead
+done

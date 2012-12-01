@@ -1,0 +1,63 @@
+#!/bin/bash -x
+if [ -z "$WORLDPATH" ] ; then
+        echo Must set WORLDPATH...
+        exit 1
+fi
+if [ -z "$BACKUPPATH" ] ; then
+        echo Must set BACKUPPATH...
+        exit 1
+fi
+if [ -z "$TMUX_SERVER" ] ; then
+        echo Must set TMUX_SERVER...
+        exit 1
+fi
+
+if [ ! -e "$WORLDPATH"/world/level.dat ] ; then
+        echo "Unable to find MineCraft world in ${WORLDPATH}..."
+        exit 1
+fi
+
+# Build Paths
+WORLD="$WORLDPATH"/world
+BACKUPNAME="$(date -u +%F_%H%M)"
+TARGET="$BACKUPPATH"/"$BACKUPNAME"/
+LAST="$BACKUPPATH"/last
+
+# Ensure Running
+if ! tmux has-session -t "$TMUX_SERVER" ; then
+	echo "Unable to find running minecraft server session..."
+	exit 1
+fi
+
+set -e
+
+# Initiate Backup Logging / Message
+tmux set-option -t "$TMUX_SERVER" status-left 'BACKUP' \; display-message 'Initiating backup...'
+
+# Flush Map
+tmux send-keys -t "$TMUX_SERVER":0 save-all Enter # list Enter
+
+# Give Flush Some Time
+read -t 1 || /bin/true
+
+# Lock Map
+tmux send-keys -t "$TMUX_SERVER":0 save-off Enter # list Enter
+
+# Wait for Any Lingering Writes
+read -t 9 || /bin/true
+
+# Copy Map Data, Hard Linking with Last Backup to Save Space
+if [ -d "$LAST" ] ; then
+	rsync -xavHP --link-dest "$LAST"/ "$WORLD"/ "$TARGET"/
+else
+	rsync -xavHP "$WORLD"/ "$TARGET"/
+fi
+
+# Clean Up
+tmux send-keys -t "$TMUX_SERVER":0 save-on Enter
+tmux set-option -t "$TMUX_SERVER" status-left '#S'
+
+# Mark As Last Backup
+rm -f "$LAST"
+ln -s "$TARGET" "$LAST"
+

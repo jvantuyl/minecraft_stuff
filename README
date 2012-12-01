@@ -7,6 +7,27 @@ apt-get install ant build-essential default-jdk gdb git-core libfreetype6-dev li
 @reboot path_to_server/minecraft_server
 # runs server in a screen
 
+# without mapping
+
+Make a directory, make some directories in the following structure:
+
+<base>/bin
+<base>/var/lib/<config_name>
+<base>/var/backup/<config_name>
+<base>/var/www/<config_name>
+
+Put the contents of this repository in bin and a standard layout for minecraft
+in each config directory (for each server instance you want to run).
+
+You can now start a server instance with "bin/startup <config_name>".  This
+will start a server, a periodic backup, and a mapper. The map will be generated
+into the www directory, where you can also put things like downloads for your
+modpack, etc.
+
+NOTE: I also manage multiple servers with the same modpacks, so I have a lib
+directory that I use to symlink common things into var/lib.  There's no
+automation to support this, though, so it's mostly just a suggestion.
+
 # for mapping
 
 # python needs for map builder
@@ -30,3 +51,5 @@ ant
 # copy jar file to appropriate place
 
 # use nginx-site config to have Nginx server your map on port 80
+
+Use this virtualenv as the base directory, as above.

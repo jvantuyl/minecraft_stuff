@@ -1,14 +1,39 @@
-#!/bin/bash
+#!/bin/bash -x
 set -e
 
-if [ "$1" == "clear" ] ; then
+if [ -z "$MCPATH" ] ; then
+	echo Must set MCPATH...
+	exit 1
+fi
+if [ -z "$BACKUPPATH" ] ; then
+	echo Must set BACKUPPATH...
+	exit 1
+fi
+if [ -z "$MAPPATH" ] ; then
+	echo Must set MAPPATH...
+	exit 1
+fi
+
+if [ ! -e "$BACKUPPATH"/last/level.dat ] ; then
+	echo "Unable to find MineCraft world in ${BACKUPPATH}..."
+	exit 1
+fi
+
+if [ "$2" == "clear" ] ; then
 	MBEOPTS="-flush"
-	MOVOPTS="-d"
+	rm -vrf "$MAPPATH"/*
+fi
+
+if [ -e "$BACKUPPATH"/last/.mapped ] ; then
+	echo Already mapped...
+	exit 0
 fi
 
 export PYTHONOPTIMIZE=on
 
-WORLD=~/minecraft/server/halcyon
-OPTS="--rendermodes=normal,lighting,night,spawn,cave,mineral --north-direction=upper-right"
-java -jar ~/devel/minecraft-biome-extractor/Dist/BiomeExtractor.jar -nogui $WORLD $MBEOPTS
-~/minecraft/bin/python -O ~/minecraft/Minecraft-Overviewer/overviewer.py $OPTS $MOVOPTS $WORLD ~/minecraft/map/
+#MOVOPTS="--rendermodes=normal,lighting,night,spawn,cave,mineral --north-direction=upper-right"
+MOVOPTS="--rendermodes=normal,lighting,night,cave"
+
+mkdir -p "$MAPPATH"
+"$MCPATH"/bin/python -O ~/minecraft/bin/overviewer.py $MOVOPTS "$BACKUPPATH"/last/ "$MAPPATH"
+touch "$BACKUPPATH"/last/.mapped

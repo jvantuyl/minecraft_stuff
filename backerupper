@@ -1,0 +1,26 @@
+#!/bin/bash -x
+if [ -z "$1" ] ; then
+	echo Must pass in world name...
+	exit 1
+fi
+
+export MCPATH="$(dirname "$(dirname "$(readlink -f "$BASH_SOURCE")")")"
+export WORLD="$1"
+export WORLDPATH="$MCPATH"/var/lib/"$WORLD"
+export BACKUPPATH="$MCPATH"/var/backup/"$WORLD"
+export MAPPATH="$MCPATH"/var/www/"$WORLD"/map/
+export TMUX_SERVER="minecraft_${WORLD}"
+
+read -t 60
+# wait a bit, then get an initial backup
+# should trigger an initial map render as well
+
+while /bin/true ; do
+	if [ ! -e "$WORLDPATH" ] ; then
+		echo Unable to find map at "$WORLDPATH"...
+	else
+		mkdir -p "$BACKUPPATH"
+		"${MCPATH}"/bin/backup
+	fi
+	read -t $[6 * 60 * 60] # like sleep, but allows pressing enter to skip ahead
+done

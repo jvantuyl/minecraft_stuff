@@ -1,0 +1,12 @@
+#!/bin/bash
+if [ -z "$2" ] ; then
+	echo "usage: $(basename "$0") <file> <pattern>"
+	exit 1
+fi
+
+FILE="$1"
+PAT="$2"
+
+START=$[$(cat "$FILE" | wc -l) + 1]
+
+tail -qfn +$START "$FILE" | grep -m 1 "$PAT" > /dev/null
